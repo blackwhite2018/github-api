@@ -1,14 +1,18 @@
 {
-    "env": {
-        "browser": true,
-        "node": true,
-        "es6": true
-    },
-    "extends": [
-        "airbnb/base"
-    ],
-    "rules": {
-        "no-plusplus": "off",
-        "no-console": "error"
-    }
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "plugins": [
+    "html",
+    "import"
+  ],
+  "extends": [
+    "airbnb/base"
+  ],
+  "rules": {
+    "no-plusplus": "off",
+    "no-console": "error"
+  }
 }
