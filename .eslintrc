@@ -2,18 +2,26 @@
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "jest": true
   },
   "plugins": [
     "html",
-    "import"
+    "import",
+    "@typescript-eslint"
   ],
+  "parser": "@typescript-eslint/parser",
   "extends": [
     "airbnb/base",
-    "eslint-config-prettier"
+    "eslint-config-prettier",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
   "rules": {
     "no-plusplus": "off",
-    "no-console": "error"
+    "no-console": "off",
+    "camelcase": "off"
   }
 }
