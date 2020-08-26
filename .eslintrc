@@ -13,15 +13,14 @@
   "parser": "@typescript-eslint/parser",
   "extends": [
     "airbnb/base",
-    "eslint-config-prettier",
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "eslint-config-prettier"
   ],
   "rules": {
     "no-plusplus": "off",
     "no-console": "off",
-    "camelcase": "off"
+    "camelcase": "off",
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
+    "no-unused-vars": "off"
   }
 }

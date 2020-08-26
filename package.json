@@ -13,7 +13,7 @@
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-typescript": "^7.10.4",
     "@types/jest": "^26.0.10",
-    "@typescript-eslint/eslint-plugin": "^3.9.1",
+    "@typescript-eslint/eslint-plugin": "^3.10.1",
     "@typescript-eslint/parser": "^3.9.1",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.3.0",
@@ -41,9 +41,9 @@
     "webpack-dev-server": "^3.11.0"
   },
   "scripts": {
-    "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix",
-    "format": "prettier --write ./src/**/*.js",
+    "lint": "eslint ./src/**/*.ts",
+    "lint:fix": "eslint ./src/**/*.ts --fix",
+    "format": "prettier --write './src/**/*.(js|ts)'",
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development",
     "test": "jest",
@@ -53,14 +53,14 @@
   "lint-staged": {
     "*.js": [
       "npm run lint:fix",
+      "npm run format",
       "git add"
     ]
   },
   "husky": {
     "hooks": {
       "pre-commit": [
-        "lint-staged",
-        "npm run format"
+        "lint-staged"
       ]
     }
   },

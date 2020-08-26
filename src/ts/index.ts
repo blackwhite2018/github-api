@@ -1,100 +1,76 @@
 import { Item, Response } from './interface/interfaces';
-import './../css/main.css';
+import '../css/main.css';
 
-const debounce: (fn: Function, ms: number) => Function = function (fn: Function, ms: number): Function {
+const debounce = (fn: Function, ms: number): Function => {
   let is_debounsed: boolean = false;
   return (...rest: Array<any>): void => {
     if (is_debounsed) return;
     fn.apply(debounce, rest);
     is_debounsed = true;
-    setTimeout(() => is_debounsed = false, ms);
-  }
+    setTimeout(() => {
+      is_debounsed = false;
+    }, ms);
+  };
 };
 
-const handleRemoveItem: (evt: MouseEvent) => any = (evt: MouseEvent): any => {
-  const elem: any | null = evt?.target;
-  if (elem)
-    elem?.parentElement.remove();
-};
-
-const createListItem: Function = (name: string, language: string, stargazersCount: number): HTMLElement => {
-  const listItem: HTMLDivElement = document.createElement('div');
-  listItem.classList.add('repositories__item');
-  const listItemBox: HTMLDivElement = document.createElement('div');
-  listItemBox.classList.add('repositories__container');
-  const listItemName: HTMLDivElement = document.createElement('div');
-  listItemName.classList.add('repositories__name');
-  listItemName.textContent = `Name: ${name}`;
-  listItemBox.appendChild(listItemName);
-  const listItemLanguage: HTMLDivElement = document.createElement('div');
-  listItemLanguage.classList.add('repositories__language');
-  listItemLanguage.textContent = `Owner: ${language}`;
-  listItemBox.appendChild(listItemLanguage);
-  const listItemStargazersCount: HTMLDivElement = document.createElement('div');
-  listItemStargazersCount.classList.add('repositories__stars');
-  listItemStargazersCount.textContent = `Stars: ${stargazersCount}`;
-  listItemBox.appendChild(listItemStargazersCount);
-  const listItemBtnRemove: HTMLButtonElement = document.createElement('button');
-  listItemBtnRemove.setAttribute('type', 'button');
-  listItemBtnRemove.setAttribute('aria-label', 'btn remove list item');
-  listItemBtnRemove.classList.add('list-item__btn-remove');
-  listItemBtnRemove.textContent = 'remove';
-  listItemBtnRemove.addEventListener('click', handleRemoveItem);
-  listItem.appendChild(listItemBox);
-  listItem.appendChild(listItemBtnRemove);
-  return listItem;
-};
-
-const handleAutocompleteItem: (item: Item) => HTMLElement = (item: Item): HTMLElement => {
+const handleAutocompleteItem = (item: Item): string => {
   const { name, language, stargazers_count } = item;
-  return createListItem(name, language, stargazers_count);
+  const tmp = `
+    <div class="repositories__item">
+      <div class="repositories__container">
+        <div class="repositories__name">Name: ${name}</div>
+        <div class="repositories__language">Owner: ${language}</div>
+        <div class="repositories__stars">Stars: ${stargazers_count}</div>
+      </div>
+      <button type="button" aria-label="btn remove list item" class="list-item__btn-remove">remove</button>
+    </div>
+  `;
+  return tmp;
 };
 
-const createListAutocompleteItem: (item: Item) => HTMLElement = (item: Item): HTMLElement => {
+const createListAutocompleteItem = (item: Item): HTMLElement => {
   const { name } = item;
   const listItem: HTMLDivElement = document.createElement('div');
   listItem.textContent = name;
-  listItem.addEventListener('click', (evt: MouseEvent) => {
+  listItem.addEventListener('click', () => {
     const listContainer: HTMLDivElement | null = document.querySelector('.repositories');
     if (listContainer) {
       const inputSearch: HTMLInputElement | null = document.querySelector('.form__search');
       if (inputSearch) {
         inputSearch.value = '';
         const autocompleteContainer: HTMLDivElement | null = document.querySelector('.autocomplete-container');
-        if (autocompleteContainer)
-          autocompleteContainer.innerHTML = '';
+        if (autocompleteContainer) autocompleteContainer.innerHTML = '';
       }
-      listContainer.appendChild(handleAutocompleteItem(item));
+      listContainer.innerHTML += handleAutocompleteItem(item);
     }
   });
   return listItem;
 };
 
-const createListAutocomplete: (items: Array<Item>) => Array<HTMLElement> = (items: Array<Item>): Array<HTMLElement> => {
-  const listAutocomplete: Array<HTMLElement> = items.reduce((acc: Array<HTMLElement>, item: Item): Array<HTMLElement> => {
+const createListAutocomplete = (items: Array<Item>): Array<HTMLElement> => {
+  const listAutocomplete: Array<HTMLElement> = items.reduce((acc: Array<HTMLElement>, item: Item): Array<
+    HTMLElement
+  > => {
     return [...acc, createListAutocompleteItem(item)];
   }, []);
   return listAutocomplete;
 };
 
-const fetchData: Function = async (url: string) => {
+const fetchData = async (url: string): Promise<Response | null> => {
   try {
     const response = await fetch(url);
-
-    try {
-      return await response.json();
-    } catch (e) {
-      console.error("incorrect json");
-      return null;
-    }
+    const data: Response = await response.json();
+    return data;
   } catch (e) {
-    console.error("fetch error");
+    console.error(e.message);
     return null;
   }
 };
 
-const loadDataForComplete: (stringQuery: string) => void = async (stringQuery: string) => {
-  const data: Response | null = await fetchData(`https://api.github.com/search/repositories?q=${stringQuery}&per_page=5`);
+const loadDataForComplete = async (stringQuery: string): Promise<void> => {
+  const data: Response | null = await fetchData(
+    `https://api.github.com/search/repositories?q=${stringQuery}&per_page=5`
+  );
 
   if (data?.items) {
     const autocompleteContainer: HTMLElement | null = document.querySelector('.autocomplete-container');
@@ -114,7 +90,7 @@ const loadDataForComplete: (stringQuery: string) => void = async (stringQuery: s
   }
 };
 
-const handleChangeSearchInput: (evt: MouseEvent) => void = (evt: MouseEvent): void => {
+const handleChangeSearchInput = (evt: MouseEvent): void => {
   const searchInput: any | null = evt?.target;
   if (searchInput) {
     const debounceFn = debounce(loadDataForComplete, 700);
@@ -122,11 +98,22 @@ const handleChangeSearchInput: (evt: MouseEvent) => void = (evt: MouseEvent): vo
   }
 };
 
-const entry: (nbr: number) => void = async (count: number) => {
+const entry = async (count: number): Promise<void> => {
   if (count > 0) {
     const searchInput: any = document.querySelector('.form__search');
     if (searchInput) {
-      searchInput.addEventListener('input', handleChangeSearchInput);
+      const listContainer: HTMLDivElement | null = document.querySelector('.repositories');
+      if (listContainer) {
+        listContainer.addEventListener('click', (evt: MouseEvent) => {
+          const { target }: any = evt;
+          if (target) {
+            if (target.closest('.list-item__btn-remove')) {
+              target.parentElement.parentElement.remove();
+            }
+          }
+        });
+        searchInput.addEventListener('input', handleChangeSearchInput);
+      }
     }
   }
 };
