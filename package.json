@@ -51,7 +51,7 @@
     "deploy": "gh-pages -d dist"
   },
   "lint-staged": {
-    "*.js": [
+    "*.{js,ts}": [
       "npm run lint:fix",
       "npm run format",
       "git add"
